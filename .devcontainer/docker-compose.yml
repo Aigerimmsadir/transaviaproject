@@ -1,0 +1,39 @@
+version: "3.9"
+   
+services:
+  redis:
+    image: redis:alpine
+    env_file: .credentials/.devcontainer.env
+    command: "redis-server --requirepass 111"
+    ports:
+      - '6379:6379'
+  celery:
+    restart: always
+    build:
+      context: ../
+      dockerfile: .devcontainer/Dockerfile
+    command: celery -A transavia beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    volumes:
+      - ../:/workspace:cached
+    env_file: .credentials/.devcontainer.env
+    depends_on:
+      - db
+      - redis
+      - app
+  db:
+    image: postgres
+    env_file: .credentials/.devcontainer.env
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+  app:
+    build:
+      context: ../
+      dockerfile: .devcontainer/Dockerfile
+    command: /bin/sh -c "while sleep 1000; do :; done"
+    env_file: .credentials/.devcontainer.env
+    volumes:
+      - ../:/workspace:cached
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
