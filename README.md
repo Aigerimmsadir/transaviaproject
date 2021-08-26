@@ -1,7 +1,7 @@
 # transaviaproject
 SETUP:
-USE VS Code
-open root folder, CTRL-Shift-P "Rebuild and Reopen in container"
+USE VS Code__
+open root folder, CTRL-Shift-P "Rebuild and Reopen in container"__
 
 then in terminal:
 python3 manage.py runserver
