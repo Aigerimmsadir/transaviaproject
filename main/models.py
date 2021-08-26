@@ -32,6 +32,7 @@ class Task(models.Model):
     date_finished = models.DateTimeField(null=True)
     # automatically is in 7 days after the start
     date_finished_planned = models.DateTimeField(default=return_date_time)
+    objects = TaskManager()
 
 
 class TaskStatusChange(models.Model):

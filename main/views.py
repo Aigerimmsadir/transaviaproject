@@ -47,6 +47,18 @@ class TaskViewSet(viewsets.ModelViewSet):
             serializer = TaskSerializer(task)
             return Response(serializer.data, status=200)
         return Response({'error': "not valid input data"}, status=400)
+    
+    @action(detail=False, methods=['get'])
+    def get_my_tasks(self, request):
+        only_mine=request.data.get('only_mine', True)
+        user_id=request.user.id
+        if only_mine:
+            queryset=Task.objects.get_my_tasks(user_id)
+        else:
+            queryset=Task.objects.get_my_tasks_observe(user_id)
+        data=self.serializer_class(queryset,many=True).data
+        return Response(data, status=200)
+    
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -75,7 +87,7 @@ class TaskStatusChangeViewSet(viewsets.ModelViewSet):
     def my_changes(self, request):
         # using manager we get all my changes or changes to my tasks
         queryset = TaskStatusChange.objects.get_my_changes(
-            self.queryset, request.user)
+            request.user)
         changes = TaskStatusChangeSerializer(queryset, many=True)
         return Response(changes.data, status=200)
 
